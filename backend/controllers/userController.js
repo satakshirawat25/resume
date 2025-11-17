@@ -1,6 +1,6 @@
 
 import User from'../models/userModel.js'
-import 'bcryptjs'
+import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
 //generate a token from JWT
@@ -43,7 +43,7 @@ export const registerUser = async(req,res)=>{
     }catch(error){
         res.status(500).json({
             message:'Server error',
-            error:message.error
+            error:error.message
         })
     }
 }
@@ -53,19 +53,19 @@ export const registerUser = async(req,res)=>{
 export const loginUSer = async(req,res)=>{
     try{
         const {email,password}=req.body
-        const user = await user.findOne({email})
+        const user = await User.findOne({email})
         if(!user){
-            return res.staus(500).json({message:"invalid email or password"})
+            return res.status(500).json({message:"invalid email or password"})
         }
 
 //compare the password
 const isMatch = await bcrypt.compare(password,user.password)
 if(!isMatch){
-    return res.status(500).json({message:'invalid emailor password'})
+    return res.status(500).json({message:'invalid email or password'})
 }
 
 res.status(201).json({
-            is:user._id,
+            _id:user._id,
             name:user.name,
             email:user.email,
             token:generateToken(user._id)
@@ -74,7 +74,7 @@ res.status(201).json({
     }catch(error){
         res.status(500).json({
             message:'Server error',
-            error:message.error
+            error:error.message
         })
     }
 
